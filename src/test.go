@@ -20,7 +20,7 @@ import (
 var n = flag.Int("n", 1, "thread")
 var s = flag.String("s", "empty", "info")
 
-func main() {
+func main_28() {
 	in := make(chan int)
 	out := make(chan int)
 	go count(in)
@@ -262,17 +262,39 @@ func main_14() {
 	statusProcStr := strings.Join(procArray, ",")
 	fmt.Println(statusProcStr)
 }
-func main_113() {
+func main() {
+	str := "123"
+	d, err := strconv.Atoi(str)
+	if err != nil {
+		fmt.Printf("%s", err.Error())
+		return
+	}
+
+	d += 1
+	fmt.Println(d)
+}
+func main_1124() {
 	intstr := " 1 123  34 "
 	intstr = strings.TrimSpace(intstr)
 	intlist := strings.Split(intstr, " ")
-	fmt.Println(intlist)
+	fmt.Printf("list=%v", intlist)
+	fmt.Printf("str=%s", strings.Join(intlist, ","))
 	for _, v := range intlist {
 		v = strings.TrimSpace(v)
+		if v == "" {
+			continue
+		}
 		i, _ := strconv.Atoi(v)
-		fmt.Println("i=", v, i+1)
+		fmt.Printf("v=[%d],i+1=[%d]", v, i+1)
 	}
-	return
+}
+
+func main_1123() {
+	strlist := []string{"hello", "world", "Go"}
+	str := strings.Join(strlist, ",")
+	fmt.Println(str)
+	splitlist := strings.Split(str, ",")
+	fmt.Println(splitlist)
 }
 func main_112() {
 	n := 1
