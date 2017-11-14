@@ -262,7 +262,7 @@ func main_14() {
 	statusProcStr := strings.Join(procArray, ",")
 	fmt.Println(statusProcStr)
 }
-func main() {
+func main_1125() {
 	str := "123"
 	d, err := strconv.Atoi(str)
 	if err != nil {
