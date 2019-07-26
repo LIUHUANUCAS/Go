@@ -1,0 +1,101 @@
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+var startch chan int
+var fakechan chan int
+var pid int
+
+func startfunc() {
+	cmd := exec.Command("python", "run.py")
+
+	if err := cmd.Start(); err != nil {
+		log.Printf("Failed to start cmd: %v", err)
+		startch <- 1
+		return
+	}
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	fmt.Println("dir:", cmd.Dir)
+	pid = cmd.Process.Pid
+	fmt.Println("pid", pid)
+	startch <- 2
+	// Do other stuff while cmd runs in background:
+	log.Println("Doing other stuff...")
+
+	// And when you need to wait for the command to finish:
+	if err := cmd.Wait(); err != nil {
+		startch <- 3
+		log.Printf("Cmd returned error: %v", err)
+	}
+	fmt.Println("pythonout:", out.String())
+	startch <- 2
+}
+func restart() error {
+	cmd := exec.Command("python", "run.py")
+
+	if err := cmd.Start(); err != nil {
+		log.Printf("Failed to start cmd: %v", err)
+		return err
+	}
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	fmt.Println("dir:", cmd.Dir)
+	pid = cmd.Process.Pid
+	fmt.Println("pid", pid)
+	if err := cmd.Wait(); err != nil {
+		// startch <- 3
+		log.Printf("Cmd returned error: %v", err)
+	}
+	return nil
+}
+func monitorPid() {
+	for {
+		process, err := os.FindProcess(pid)
+		if err != nil {
+			err2 := restart()
+			if err2 != nil {
+				log.Printf("errstart:%s\n", err2)
+			} else {
+				log.Printf("restart success:%d\n", pid)
+			}
+		} else {
+			log.Printf("pid[%+v] is running", process)
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
+func main() {
+	startch = make(chan int, 1)
+	fakechan = make(chan int, 1)
+	go startfunc()
+	x := 0
+	select {
+	case x = <-startch:
+		fmt.Println("x", x)
+	}
+	if x == 3 {
+		panic("err start func")
+	}
+	go monitorPid()
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println("subprocess pid:", process.Pid)
+	select {
+	case x = <-fakechan:
+		fmt.Println(x)
+	}
+	
+}
