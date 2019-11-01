@@ -81,6 +81,16 @@ func monitorPid() {
 	}
 }
 
+func findServerPid(name string ) int {
+	cmd := fmt.Sprintf("ps -ef|grep %s|grep -v grep | awk '{print $2}'",name)
+	cmd := exec.Command("shell",fmt.Sprintf("ps -ef|grep %s|grep -v grep | awk '{print $2}'",name))
+	if err := cmd.Start();err != nil {
+		log.Printf("Failed to start cmd: %v", err)
+		return err
+	}
+
+}
+
 func main() {
 	startch = make(chan int, 1)
 	fakechan = make(chan int, 1)
