@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+//go run lissajous.go > out.gif
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	if len(os.Args) > 1 && os.Args[1] == "web" {
@@ -39,7 +40,8 @@ const (
 	blackIndex = 1
 )
 
-var palette = []color.Color{color.White, color.Black}
+// var palette = []color.Color{color.White, color.Black}
+var palette = []color.Color{color.RGBA{0xff, 0xff, 0xff, 0xff}, color.Black}
 
 func lissajous(out io.Writer) {
 	freq := rand.Float64() * 3.0
