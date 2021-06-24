@@ -37,8 +37,8 @@ func main() {
 	r := gin.Default()
 	// 第三步: 添加一个 middleWare, 为每一个请求添加span
 	r.Use(func(c *gin.Context) {
-		//span, _ := nativeTracer.StartSpanFromContext(c.Request.Context(), c.FullPath()+"-http")
-		span, ctx := nativeTracer.StartSpanFromContext(c, c.FullPath()+"-http")
+		span, ctx := nativeTracer.StartSpanFromContext(c.Request.Context(), c.FullPath()+"-http")
+		// span, ctx := nativeTracer.StartSpanFromContext(c, c.FullPath()+"-http")
 		defer span.Finish()
 		c.Request = c.Request.WithContext(ctx) // inherit from ctx
 		c.Next()
